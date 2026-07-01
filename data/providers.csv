@@ -1,0 +1,9 @@
+# DISCLAIMER: Synthetic demo data only. Not real patients or providers.
+provider_id,name,specialty,sub_specialty,institution,city,state,monthly_patients,pct_biomarker_tested,addressable_patients_per_month
+P001,Dr. Anika Rao,Thoracic Oncology,Non-Small Cell Lung Cancer,Northlake Cancer Institute,Chicago,IL,118,72,82
+P002,Dr. Marcus Ellison,GI Oncology,Colorectal & Upper GI,Crescent Academic Medical Center,Atlanta,GA,134,63,76
+P003,Dr. Serena Walsh,Breast Oncology,Metastatic Breast Cancer,Hillcrest Oncology Partners,Austin,TX,96,68,61
+P004,Dr. Elijah Kim,Medical Oncology,Community Practice,Riverbend Cancer Group,Nashville,TN,142,51,58
+P005,Dr. Priya Nair,GU Oncology,Prostate & Bladder,Summit Urologic Oncology,Dallas,TX,87,74,54
+P006,Dr. James Okonkwo,Hematologic Oncology,Lymphoma & Myeloma,Meridian Blood Cancer Center,Denver,CO,72,58,41
+P007,Dr. Lena Vasquez,Breast Oncology,Early-Stage Breast,,Phoenix,AZ,64,,38

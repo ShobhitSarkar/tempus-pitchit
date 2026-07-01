@@ -1,0 +1,7 @@
+# DISCLAIMER: Synthetic demo CRM notes only. Not real provider interactions.
+
+[2026-05-12] Mentioned biopsy samples are often too small for full panel — asked about liquid biopsy backup when bronchoscopy yields are low.
+[2026-05-01] Follow-up after ASCO — expressed interest in trial matching workflow for NSCLC patients with actionable alterations.
+[2026-04-18] Positive signal: has ordered Tempus xT on ~8 lung cases in Q1; results turnaround was acceptable. Wants clearer RNA add-on path.
+[2026-03-22] Tumor board prep — flagged urgency around new first-line NSCLC guideline updates; wants faster biomarker turnaround for treatment-pending patients.
+[2026-02-10] Intro meeting. High NSCLC volume, biomarker-driven. Concern = tissue insufficiency + speed to first-line decision.

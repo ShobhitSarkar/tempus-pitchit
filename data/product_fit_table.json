@@ -1,0 +1,8 @@
+{
+  "Thoracic Oncology": {"xT CDx": 94, "xR": 60, "xF+": 55},
+  "GI Oncology": {"xT CDx": 70, "xR": 80, "xF+": 65},
+  "Breast Oncology": {"xT CDx": 50, "xR": 55, "xF+": 90},
+  "Medical Oncology": {"xT CDx": 75, "xR": 45, "xF+": 70},
+  "GU Oncology": {"xT CDx": 65, "xR": 50, "xF+": 85},
+  "Hematologic Oncology": {"xT CDx": 55, "xR": 88, "xF+": 40}
+}

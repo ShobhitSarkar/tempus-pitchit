@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How the Sales Copilot works</title>
+<style>
+  :root {
+    --ink: #1a2230;
+    --muted: #5b6b80;
+    --line: #dfe5ee;
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --blue: #2f6df0;
+    --blue-soft: #e8f0ff;
+    --green: #1f9d63;
+    --green-soft: #e3f6ec;
+    --amber: #b6791f;
+    --amber-soft: #fbf1dd;
+    --purple: #6d4bd0;
+    --purple-soft: #efeafc;
+    --code: #eef1f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 40px 24px 80px; }
+  header.hero { margin-bottom: 8px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--blue);
+  }
+  h1 { font-size: 32px; letter-spacing: -.02em; margin: 6px 0 8px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 680px; }
+  h2 {
+    font-size: 22px; letter-spacing: -.01em; margin: 44px 0 14px;
+    padding-top: 20px; border-top: 1px solid var(--line);
+  }
+  h3 { font-size: 16px; margin: 22px 0 8px; }
+  p { margin: 10px 0; }
+  .muted { color: var(--muted); }
+  code {
+    background: var(--code); padding: 1px 6px; border-radius: 5px;
+    font: 13px/1.5 "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px; margin: 14px 0;
+  }
+  .callout {
+    border-left: 3px solid var(--amber); background: var(--amber-soft);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0;
+    font-size: 15px;
+  }
+  .callout.blue { border-color: var(--blue); background: var(--blue-soft); }
+
+  /* flow diagrams */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; margin: 16px 0; }
+  .node {
+    flex: 1 1 150px; min-width: 130px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  }
+  .node .k { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .node .t { font-weight: 650; margin-top: 2px; }
+  .node .d { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .node.blue { background: var(--blue-soft); border-color: #cfe0ff; }
+  .node.green { background: var(--green-soft); border-color: #c8ecd6; }
+  .node.amber { background: var(--amber-soft); border-color: #f0dfb8; }
+  .node.purple { background: var(--purple-soft); border-color: #ded3f6; }
+  .arrow { align-self: center; color: var(--muted); font-size: 20px; flex: 0 0 auto; }
+
+  .pill {
+    display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px;
+    border-radius: 999px; vertical-align: middle;
+  }
+  .pill.stub { background: var(--amber-soft); color: var(--amber); }
+  .pill.real { background: var(--green-soft); color: var(--green); }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  td code { font-size: 12px; }
+
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0; }
+  ol.steps > li {
+    counter-increment: s; position: relative; padding: 10px 0 10px 44px; border-bottom: 1px solid var(--line);
+  }
+  ol.steps > li:last-child { border-bottom: 0; }
+  ol.steps > li::before {
+    content: counter(s); position: absolute; left: 0; top: 10px;
+    width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: #fff;
+    font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  .formula {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; font: 15px/1.7 "SF Mono", ui-monospace, Menlo, monospace;
+    overflow-x: auto;
+  }
+  .legend { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  footer { margin-top: 50px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">Oncology Sales Copilot &middot; POC</div>
+    <h1>How this app works</h1>
+    <p class="lede">A plain-language tour of the whole thing: one program that both shows the web page and answers its questions, how the data flows, and where the "AI" is currently faked.</p>
+  </header>
+
+  <div class="callout blue">
+    <strong>The one-sentence version:</strong> A single Python program (FastAPI) does two jobs at once &mdash; it hands your browser the web page, <em>and</em> it answers the small data questions that page asks. There is no separate server and no database. The AI parts make real calls to Anthropic when a key is configured, and fall back to a built-in stand-in when it isn't.
+  </div>
+
+  <!-- ============================================ -->
+  <h2>1. The big picture</h2>
+  <p>When someone visits the site, everything is served by <strong>one process</strong> listening on one port. That process wears two hats:</p>
+
+  <div class="flow">
+    <div class="node blue">
+      <div class="k">Your browser</div>
+      <div class="t">React app (the UI)</div>
+      <div class="d">The dashboard you click around in. Built ahead of time into plain files in <code>dist/</code>.</div>
+    </div>
+    <div class="arrow">&harr;</div>
+    <div class="node green">
+      <div class="k">One process</div>
+      <div class="t">FastAPI (Python)</div>
+      <div class="d">Serves those UI files <em>and</em> answers <code>/api/&hellip;</code> questions from the same program.</div>
+    </div>
+    <div class="arrow">&harr;</div>
+    <div class="node amber">
+      <div class="k">On disk</div>
+      <div class="t">JSON &amp; text files</div>
+      <div class="d">Providers, product info, CRM notes. No database &mdash; just files.</div>
+    </div>
+  </div>
+
+  <p class="muted">So "the backend" and "the frontend" ship together. In production you run one command and get both.</p>
+
+  <!-- ============================================ -->
+  <h2>2. What happens the moment the app starts</h2>
+  <p>Before it answers anyone, the app runs a short <strong>startup pipeline</strong> that turns the raw data files into two ready-to-use JSON files, then loads everything into memory. This happens once, on boot.</p>
+
+  <div class="flow">
+    <div class="node">
+      <div class="k">Raw inputs</div>
+      <div class="t">providers.csv<br>product_fit_table.json<br>knowledge_base.md<br>crm_notes/*.txt</div>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node blue">
+      <div class="k">Step A</div>
+      <div class="t">Ingest</div>
+      <div class="d"><code>ingest_providers.py</code> &mdash; cleans &amp; joins the data. Pure math, no AI.</div>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node blue">
+      <div class="k">Step B</div>
+      <div class="t">Score CRM notes <span class="pill real">AI</span></div>
+      <div class="d"><code>extract_crm_signals.py</code> &mdash; reads each doctor's notes with the AI to get a "warmth" score (or a stand-in with no key).</div>
+    </div>
+    <div class="arrow">&rarr;</div>
+    <div class="node green">
+      <div class="k">Result</div>
+      <div class="t">Loaded in memory</div>
+      <div class="d">7 providers with scores &amp; signals, ready to rank instantly.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Why two files come out of this:</strong> <code>normalized_providers.json</code> (the cleaned facts about each doctor) and <code>cached_signals.json</code> (the "warmth" score + objection/interest pulled from their notes). The ranking step later just mixes these two together.
+  </div>
+
+  <!-- ============================================ -->
+  <h2>3. What happens when you load the page</h2>
+  <ol class="steps">
+    <li><strong>Browser asks for the page.</strong> FastAPI hands back the built React app from <code>dist/</code>.</li>
+    <li><strong>The app asks "who should I call?"</strong> It calls <code>GET /api/providers/ranked</code>.</li>
+    <li><strong>The app scores &amp; sorts</strong> all 7 providers on the spot (see section 5) and returns them best-first.</li>
+    <li><strong>The app auto-picks #1</strong> and quietly asks <code>POST /api/providers/&#123;id&#125;/generate</code> for that doctor's call brief, so the prep panel is never empty.</li>
+  </ol>
+  <p class="muted">Everything you see &mdash; the queue, the score bars, the product fit, the talking points &mdash; comes from those two API calls.</p>
+
+  <!-- ============================================ -->
+  <h2>4. The things you can do (and which API each one calls)</h2>
+  <table>
+    <thead><tr><th>You do this</th><th>Browser calls</th><th>What comes back</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Open the app / pick a doctor</td>
+        <td><code>GET /api/providers/ranked</code></td>
+        <td>All 7 providers, scored and sorted, with the fields the cards need.</td>
+      </tr>
+      <tr>
+        <td>Drag the <strong>Weights</strong> sliders</td>
+        <td><code>GET /api/providers/ranked?w_volume=&hellip;</code></td>
+        <td>The same list, re-sorted using your weights. The whole queue reshuffles live.</td>
+      </tr>
+      <tr>
+        <td>Click <strong>Generate Brief</strong></td>
+        <td><code>POST /api/providers/&#123;id&#125;/generate</code></td>
+        <td>An elevator pitch, likely questions, and speaking notes <span class="pill real">AI</span>.</td>
+      </tr>
+      <tr>
+        <td>Click <strong>Log CRM note</strong> &rarr; Save</td>
+        <td><code>POST /api/providers/&#123;id&#125;/notes</code></td>
+        <td>Saves your note to disk and returns the updated note list.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================ -->
+  <h2>5. How the ranking score is calculated</h2>
+  <p>Each provider gets three sub-scores from 0&ndash;100, and the final score is a <strong>weighted blend</strong> of them. The weights are what the sliders change.</p>
+
+  <div class="formula">
+    score = <span style="color:var(--blue)">Volume</span> &times; w<sub>V</sub>
+          + <span style="color:var(--purple)">Product&nbsp;fit</span> &times; w<sub>F</sub>
+          + <span style="color:var(--green)">Engagement</span> &times; w<sub>E</sub>
+  </div>
+  <div class="legend">Default weights: Volume <strong>20%</strong>, Product fit <strong>40%</strong>, Engagement <strong>40%</strong> (they always add up to 100%).</div>
+
+  <table>
+    <thead><tr><th>Sub-score</th><th>Where it comes from</th></tr></thead>
+    <tbody>
+      <tr><td><span style="color:var(--blue)"><strong>Volume</strong></span></td><td>How many addressable patients per month, scaled against the busiest provider (busiest = 100).</td></tr>
+      <tr><td><span style="color:var(--purple)"><strong>Product fit</strong></span></td><td>The best of the three product-fit numbers for that doctor's specialty. The winner gets the "Best fit" badge.</td></tr>
+      <tr><td><span style="color:var(--green)"><strong>Engagement</strong></span></td><td>The CRM "warmth" score judged from their notes by the AI (see section 6).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>The one special case &mdash; Dr. Lena Vasquez (P007):</strong> she has no CRM notes, so there's no Engagement score to use. For her, the app drops that term and re-splits the remaining weight between Volume and Product fit. That's why she shows a "No CRM history" badge and only two score bars.
+  </div>
+
+  <!-- ============================================ -->
+  <h2>6. Where the "AI" is</h2>
+  <p>There are two AI touch-points. Each one makes a <strong>real Anthropic API call</strong> when the app has a key (<code>ANTHROPIC_API_KEY</code>), and quietly falls back to a built-in stand-in when it doesn't &mdash; so the demo always runs, even with no key.</p>
+
+  <table>
+    <thead><tr><th>Spot</th><th>With a key <span class="pill real">real AI</span></th><th>Without a key <span class="pill stub">fallback</span></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Scoring CRM notes</strong><br><span class="muted">the "warmth" number</span></td>
+        <td>reads each doctor's notes and judges how ready-to-buy they are, plus pulls out their top objection &amp; interest.</td>
+        <td>a stable made-up score per provider.</td>
+      </tr>
+      <tr>
+        <td><strong>Generating the brief</strong><br><span class="muted">pitch &amp; talking points</span></td>
+        <td>writes a tailored pitch and Q&amp;A for that specific doctor, grounded in the product facts.</td>
+        <td>fills a fixed sentence template with real product facts.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>How the switch works:</strong> if <code>ANTHROPIC_API_KEY</code> is set, real calls run (model <code>claude-opus-4-8</code> by default). If it's missing &mdash; or a call errors &mdash; the app uses the fallback instead of failing. Everything <em>around</em> the AI (data cleaning, scoring math, ranking, sliders, note-saving, the whole UI) is the same either way.</div>
+
+  <!-- ============================================ -->
+  <h2>7. The files, at a glance</h2>
+  <table>
+    <thead><tr><th>File / folder</th><th>Its job</th></tr></thead>
+    <tbody>
+      <tr><td><code>backend/main.py</code></td><td>The one program: startup pipeline + all the <code>/api</code> endpoints + serving the UI.</td></tr>
+      <tr><td><code>ingest_providers.py</code></td><td>Cleans &amp; joins the raw data (Step A).</td></tr>
+      <tr><td><code>extract_crm_signals.py</code></td><td>Scores the CRM notes (Step B) &mdash; the stubbed AI.</td></tr>
+      <tr><td><code>backend/services/scoring.py</code></td><td>The weighted ranking math from section 5.</td></tr>
+      <tr><td><code>backend/services/generation.py</code></td><td>Builds the call brief &mdash; the templated AI.</td></tr>
+      <tr><td><code>backend/services/notes.py</code></td><td>Saves "Log CRM note" entries to disk.</td></tr>
+      <tr><td><code>src/</code> &rarr; <code>dist/</code></td><td>The React UI source, built into the static files the app serves.</td></tr>
+      <tr><td><code>data/</code></td><td>The raw inputs: providers, product info, CRM notes.</td></tr>
+      <tr><td><code>output/</code></td><td>The generated JSON files the app loads at startup.</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Companion to <code>docs/DEPLOYMENT.md</code>. This is a POC &mdash; several shortcuts here are deliberate; the deployment doc lists them.
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# DISCLAIMER: Synthetic demo CRM notes only. Not real provider interactions.
+
+[2026-05-10] DLBCL case — asked whether RNA panel catches BCL2 and MYC rearrangements reliably vs. FISH-only workflow.
+[2026-04-25] Myeloma clinic — interested in fusion detection for translocation-driven subtypes; skeptical of DNA-only NGS from competitor lab.
+[2026-04-08] Conference booth follow-up. Moderate engagement; wants validation data on RNA yield from bone marrow biopsies.
+[2026-03-12] Intro call. Lymphoma-heavy practice. No current Tempus relationship; evaluating xR as standalone for heme fusions.
+[2026-02-20] Note: prefers local path lab for standard IHC; genomic send-out only for complex heme cases.

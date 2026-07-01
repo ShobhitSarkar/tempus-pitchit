@@ -1,0 +1,6 @@
+# DISCLAIMER: Synthetic demo CRM notes only. Not real provider interactions.
+
+[2026-05-15] Metastatic breast clinic — asked for patient-friendly language on why liquid testing helps at progression vs. initial diagnosis.
+[2026-05-02] Mentioned resistance mutations driving therapy switches; interested in repeat ctDNA without re-biopsy when bone-only progression.
+[2026-04-20] Warm conversation — wants concise reports that tie alterations to next-line options, not exhaustive variant lists.
+[2026-03-28] Prior Tempus xF used on 2 mBC cases last quarter; physician liked speed but wants better integration with EHR results view.

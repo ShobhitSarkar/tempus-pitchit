@@ -646,7 +646,7 @@ export function App() {
 
             <textarea
               className="note-input"
-              placeholder="Log a call summary, objection, or next step. This writes to the CRM record."
+              placeholder="Log a call summary, objection, or next step. This writes to the CRM record and refines this account's score on the next refresh."
               value={noteDraft}
               onChange={(event) => setNoteDraft(event.target.value)}
               rows={3}

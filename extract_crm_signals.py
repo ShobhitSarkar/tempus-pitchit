@@ -60,12 +60,50 @@ class _CrmScore(BaseModel):
     key_interest: str | None = None
 
 
-def _stub_score(provider_id: str) -> dict[str, Any]:
-    """Deterministic placeholder used when the LLM is disabled or a call fails.
+_POSITIVE_SIGNALS = (
+    "interested",
+    "excited",
+    "great call",
+    "frustrated with current",
+    "wants",
+    "faster turnaround",
+    "switch",
+    "trial",
+    "pilot",
+    "follow up",
+    "follow-up",
+    "impressed",
+    "ready to",
+    "champion",
+    "expand",
+)
+_NEGATIVE_SIGNALS = (
+    "not interested",
+    "no budget",
+    "happy with current",
+    "declined",
+    "no thanks",
+    "cancel",
+    "stick with",
+    "too expensive",
+)
 
-    Seeded per-provider so scores are stable across restarts (repeatable demo).
+
+def _stub_score(provider_id: str, crm_text: str) -> dict[str, Any]:
+    """Deterministic, note-aware placeholder used when the LLM is disabled.
+
+    A stable per-provider baseline is nudged up/down by simple sentiment signals
+    in the notes, so logging a note visibly changes the score on the next
+    startup — this makes the self-improvement loop demonstrable without an API
+    key. Fully deterministic, so scores are repeatable across restarts.
     """
     rng = random.Random(provider_id)
+    base = rng.randint(35, 60)
+    text = (crm_text or "").lower()
+    positives = sum(text.count(signal) for signal in _POSITIVE_SIGNALS)
+    negatives = sum(text.count(signal) for signal in _NEGATIVE_SIGNALS)
+    score = max(0, min(100, base + 9 * positives - 13 * negatives))
+
     sample_objections = [
         "Turnaround time concerns for STAT cases",
         "Cost relative to current provider",
@@ -79,8 +117,11 @@ def _stub_score(provider_id: str) -> dict[str, Any]:
         "Comparable performance data vs. current vendor",
     ]
     return {
-        "crm_score": rng.randint(0, 100),
-        "reasoning": f"[STUBBED] Placeholder score for {provider_id}, not LLM-derived.",
+        "crm_score": score,
+        "reasoning": (
+            f"[heuristic] Baseline {base} adjusted by {positives} positive / "
+            f"{negatives} negative signal(s) in the notes."
+        ),
         "top_objection": rng.choice(sample_objections),
         "key_interest": rng.choice(sample_interests),
     }
@@ -115,7 +156,7 @@ def score_crm_notes(provider_id: str, crm_text: str, *, retry: bool = False) -> 
     """
     del retry  # structured output makes the JSON-reminder retry unnecessary
     if not LLM_ENABLED:
-        return _stub_score(provider_id)
+        return _stub_score(provider_id, crm_text)
     try:
         return _llm_score(crm_text)
     except Exception as exc:  # noqa: BLE001 — degrade gracefully on any API failure
@@ -124,7 +165,7 @@ def score_crm_notes(provider_id: str, crm_text: str, *, retry: bool = False) -> 
             "Falling back to stub.",
             file=sys.stderr,
         )
-        return _stub_score(provider_id)
+        return _stub_score(provider_id, crm_text)
 
 
 def validate_crm_score_response(data: dict[str, Any]) -> None:

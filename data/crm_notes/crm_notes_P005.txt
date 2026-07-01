@@ -1,7 +1,1 @@
 # DISCLAIMER: Synthetic demo CRM notes only. Not real provider interactions.
-
-[2026-05-20] Urgent ask — new mCRPC PARP inhibitor label expansion; needs faster molecular confirmation for HRR alterations without waiting on repeat prostate biopsy.
-[2026-05-06] Bladder cancer case — tissue insufficient after TURBT; asked specifically about xF+ as primary profiling route.
-[2026-04-15] Competitive note: currently using Guardant for liquid; complaint = limited fusion coverage on their panel.
-[2026-03-30] First visit. High GU volume, biomarker-aware. Open to pilot if liquid TAT beats current vendor.
-[2026-02-08] Email exchange — requested sample xF+ report redacted for tumor board review.

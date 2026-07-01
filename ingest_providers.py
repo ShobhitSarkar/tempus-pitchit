@@ -115,7 +115,12 @@ def build_provider_record(
     specialty = row["specialty"]
     fit_scores = fit_map.get(specialty, {})
     products = sorted(fit_scores.keys(), key=lambda key: -fit_scores.get(key, 0))
-    has_crm_data = row["provider_id"] != "P007" and (DATA_DIR / "crm_notes" / f"crm_notes_{row['provider_id']}.txt").is_file()
+    # A provider "has CRM data" whenever a notes file exists for them. This is
+    # what powers the self-improvement loop: a cold lead with no history (e.g.
+    # P007) starts with no file, and the first note a rep logs creates it — so on
+    # the next startup the provider is scored and enters the ranking.
+    crm_file = DATA_DIR / "crm_notes" / f"crm_notes_{row['provider_id']}.txt"
+    has_crm_data = crm_file.is_file()
     raw_text_ref = f"crm_notes_{row['provider_id']}.txt" if has_crm_data else None
     return {
         "provider_id": row["provider_id"],

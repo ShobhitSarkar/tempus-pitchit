@@ -115,7 +115,7 @@
   </header>
 
   <div class="callout blue">
-    <strong>The one-sentence version:</strong> A single Python program (FastAPI) does two jobs at once &mdash; it hands your browser the web page, <em>and</em> it answers the small data questions that page asks. There is no separate server and no database. The AI parts make real calls to Anthropic when a key is configured, and fall back to a built-in stand-in when it isn't.
+    <strong>The one-sentence version:</strong> A single Python program (FastAPI) does two jobs at once &mdash; it hands your browser the web page, <em>and</em> it answers the small data questions that page asks. There is no separate server and no database. The AI parts make real calls to OpenAI when a key is configured, and fall back to a built-in stand-in when it isn't.
   </div>
 
   <!-- ============================================ -->
@@ -241,7 +241,7 @@
 
   <!-- ============================================ -->
   <h2>6. Where the "AI" is</h2>
-  <p>There are two AI touch-points. Each one makes a <strong>real Anthropic API call</strong> when the app has a key (<code>ANTHROPIC_API_KEY</code>), and quietly falls back to a built-in stand-in when it doesn't &mdash; so the demo always runs, even with no key.</p>
+  <p>There are two AI touch-points. Each one makes a <strong>real OpenAI API call</strong> when the app has a key (<code>OPENAI_API_KEY</code>), and quietly falls back to a built-in stand-in when it doesn't &mdash; so the demo always runs, even with no key.</p>
 
   <table>
     <thead><tr><th>Spot</th><th>With a key <span class="pill real">real AI</span></th><th>Without a key <span class="pill stub">fallback</span></th></tr></thead>
@@ -260,7 +260,7 @@
   </table>
 
   <div class="callout">
-    <strong>How the switch works:</strong> if <code>ANTHROPIC_API_KEY</code> is set, real calls run (model <code>claude-opus-4-8</code> by default). If it's missing &mdash; or a call errors &mdash; the app uses the fallback instead of failing. Everything <em>around</em> the AI (data cleaning, scoring math, ranking, sliders, note-saving, the whole UI) is the same either way.</div>
+    <strong>How the switch works:</strong> if <code>OPENAI_API_KEY</code> is set, real calls run (model <code>gpt-4o-mini</code> by default). If it's missing &mdash; or a call errors &mdash; the app uses the fallback instead of failing. Everything <em>around</em> the AI (data cleaning, scoring math, ranking, sliders, note-saving, the whole UI) is the same either way.</div>
 
   <!-- ============================================ -->
   <h2>7. The files, at a glance</h2>

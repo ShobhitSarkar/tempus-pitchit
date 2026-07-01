@@ -21,7 +21,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from llm import LLM_ENABLED, MODEL, get_client
+from llm import LLM_ENABLED, structured_complete
 
 CRM_SCORE_SYSTEM = """You are scoring a single oncology provider's sales-readiness based on CRM notes
 from a medical device/diagnostics sales rep.
@@ -128,17 +128,13 @@ def _stub_score(provider_id: str, crm_text: str) -> dict[str, Any]:
 
 
 def _llm_score(crm_text: str) -> dict[str, Any]:
-    """Score a note with a real Anthropic call using structured output."""
-    response = get_client().messages.parse(
-        model=MODEL,
-        max_tokens=1024,
+    """Score a note with a real LLM call using structured output."""
+    parsed = structured_complete(
         system=CRM_SCORE_SYSTEM,
-        messages=[{"role": "user", "content": f"CRM notes:\n---\n{crm_text}\n---"}],
-        output_format=_CrmScore,
+        user=f"CRM notes:\n---\n{crm_text}\n---",
+        schema=_CrmScore,
+        max_tokens=1024,
     )
-    if response.stop_reason == "refusal" or response.parsed_output is None:
-        raise RuntimeError("model refused or returned no structured output")
-    parsed = response.parsed_output
     return {
         "crm_score": parsed.crm_score,
         "reasoning": parsed.reasoning,

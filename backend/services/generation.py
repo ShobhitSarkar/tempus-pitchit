@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from llm import LLM_ENABLED, MODEL, get_client
+from llm import LLM_ENABLED, structured_complete
 
 GENERATION_SYSTEM = """You are a sales-enablement assistant for reps who sell Tempus oncology
 diagnostics (xT CDx tissue profiling, xR RNA fusion detection, xF+ liquid biopsy).
@@ -83,17 +83,14 @@ def _llm_response(
     crm_entry: dict[str, Any],
     product_kb: dict[str, Any],
 ) -> dict[str, Any]:
-    """Generate a brief with a real Anthropic call using structured output."""
-    response = get_client().messages.parse(
-        model=MODEL,
-        max_tokens=2048,
+    """Generate a brief with a real LLM call using structured output."""
+    parsed = structured_complete(
         system=GENERATION_SYSTEM,
-        messages=[{"role": "user", "content": _build_context(provider, crm_entry, product_kb)}],
-        output_format=_Brief,
+        user=_build_context(provider, crm_entry, product_kb),
+        schema=_Brief,
+        max_tokens=2048,
     )
-    if response.stop_reason == "refusal" or response.parsed_output is None:
-        raise RuntimeError("model refused or returned no structured output")
-    return response.parsed_output.model_dump()
+    return parsed.model_dump()
 
 
 def _template_response(

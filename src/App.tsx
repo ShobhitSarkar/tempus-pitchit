@@ -67,7 +67,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [generatedBriefs, setGeneratedBriefs] = useState<Record<string, GenerationResponse>>({});
   const [weights, setWeights] = useState<Weights>(DEFAULT_WEIGHTS);
   const [showWeights, setShowWeights] = useState(false);
@@ -177,6 +177,9 @@ export function App() {
   );
 
   const generated = selected ? generatedBriefs[selected.provider_id] : undefined;
+  // Spinner state is per-provider so a canceled/stale generation for one account
+  // can never strand the button on another account (see prior "stuck Generating…").
+  const isGenerating = selected ? generatingId === selected.provider_id : false;
   const selectedNotes = selected ? notesByProvider[selected.provider_id] ?? [] : [];
 
   // Auto-load the call brief for the selected account so speaking notes are
@@ -187,7 +190,7 @@ export function App() {
     }
     let canceled = false;
     const providerId = selected.provider_id;
-    setIsGenerating(true);
+    setGeneratingId(providerId);
     generateBrief(providerId)
       .then((payload) => {
         if (!canceled) setGeneratedBriefs((state) => ({ ...state, [providerId]: payload }));
@@ -196,7 +199,9 @@ export function App() {
         if (!canceled) setError((err as Error).message ?? "Unable to generate brief");
       })
       .finally(() => {
-        if (!canceled) setIsGenerating(false);
+        // Clear unconditionally (even if this run was canceled) so a stale
+        // generation can't strand the spinner; only clear if it's still ours.
+        setGeneratingId((current) => (current === providerId ? null : current));
       });
     return () => {
       canceled = true;
@@ -221,14 +226,15 @@ export function App() {
 
   const handleGenerateBrief = async () => {
     if (!selected) return;
-    setIsGenerating(true);
+    const providerId = selected.provider_id;
+    setGeneratingId(providerId);
     try {
-      const payload = await generateBrief(selected.provider_id);
-      setGeneratedBriefs((state) => ({ ...state, [selected.provider_id]: payload }));
+      const payload = await generateBrief(providerId);
+      setGeneratedBriefs((state) => ({ ...state, [providerId]: payload }));
     } catch (err) {
       setError((err as Error).message ?? "Unable to generate brief");
     } finally {
-      setIsGenerating(false);
+      setGeneratingId((current) => (current === providerId ? null : current));
     }
   };
 
